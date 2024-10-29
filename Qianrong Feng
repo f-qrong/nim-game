@@ -23,18 +23,20 @@ def player_move(piles, player_name):
             # prompt the player to enter valid number
             pile_choice = int(input(f"{player_name}, Choose a pile (1, 2, or 3): ")) - 1
             if 0 <= pile_choice < len(piles) and piles[pile_choice] > 0:
-                # ask for the number of counter to remove
-                remove_number = int(input(f"How many to remove from pile {pile_choice + 1} (1 to {piles[pile_choice]})"
-                                          f": "))
-                # check if the number of counters to remove is valid
-                if 0 < remove_number <= piles[pile_choice]:
-                    piles[pile_choice] -= remove_number  # piles[pile_choice] = piles[pile_choice] - count
-                    return piles  # Return the updated piles
-                else:
-                    print(f"Invalid number of counters. Please enter a number between 1 and {piles[pile_choice]}.")
+                try:
+                    # ask for the number of counter to remove
+                    remove_number = int(input(f"How many to remove from pile {pile_choice + 1} (1 to "
+                                              f"{piles[pile_choice]}): "))
+                    # check if the number of counters to remove is valid
+                    if 0 < remove_number <= piles[pile_choice]:
+                        piles[pile_choice] -= remove_number  # piles[pile_choice] = piles[pile_choice] - remove_number
+                        return  # Return the updated piles
+                    else:
+                        print(f"Invalid number of counters. Please enter a number between 1 and {piles[pile_choice]}.")
+                except ValueError:
+                    print("Invalid choice. Please choose a non-empty pile.")
             else:
                 print("Invalid choice. Please choose a non-empty pile.")
-
         except ValueError:
             print("Invalid input. Please enter a number.")
 
@@ -55,26 +57,37 @@ def nim_game():
     player1_name = input("\nPlease enter the name of player 1: ")
     player2_name = input("Please enter the name of player 2: ")
 
-    # Initial piles
-    piles = [6, 8, 9]
-    player_turn = 0
-    players = [player1_name, player2_name]
-
     while True:
-        display_piles(piles)
+        # Initial piles
+        piles = [6, 8, 9]
+        player_turn = 0
+        players = [player1_name, player2_name]
 
-        current_player = players[player_turn]
-        # let the current player move
-        piles = player_move(piles, current_player)
+        while True:
+            display_piles(piles)
+            current_player = players[player_turn]
 
-        # Switch turns between players (Alternate between 0 and 1)
-        player_turn = 1 - player_turn
+            # let the current player move
+            player_move(piles, current_player)
 
-        if determine_game_over(piles):
-            print(f"\n{current_player} loses!")
-            print(f"Congratulation {players[1 - player_turn]}, you win!")
-            print("Thank you for playing!")
-            break
+            # Switch turns between players (Alternate between 0 and 1)
+            player_turn = 1 - player_turn
+
+            # check if the game is over
+            if determine_game_over(piles):
+                print(f"\n{current_player} loses!")
+                print(f"Congratulation {players[1 - player_turn]}, you win!")
+                break
+
+        while True:
+            play_again = input("Do you want to play again? (yes or no): ").strip().lower()
+            if play_again == "yes":
+                break
+            elif play_again == "no":
+                print("Thank you for playing!")
+                return
+            else:
+                print("Invalid choice. Please enter 'yes' or 'no'.")
 
 
 nim_game()
